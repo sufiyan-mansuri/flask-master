@@ -1,11 +1,11 @@
 from flask import Blueprint, request, jsonify, url_for
 from app import db, revoked_tokens, mail, bcrypt
-from app.models import User
+from app.models.user import User
 from flask_jwt_extended import create_access_token, create_refresh_token, jwt_required, get_jwt_identity, get_jwt
 from flask_mail import Message
 from datetime import datetime, timedelta
 import secrets
-from app.forms import RegistrationForm, LoginForm, PasswordResetRequestForm, PasswordResetForm
+from app.forms.auth import RegistrationForm, LoginForm, PasswordResetRequestForm, PasswordResetForm
 
 auth_bp = Blueprint('auth', __name__)
 

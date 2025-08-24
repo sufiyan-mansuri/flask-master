@@ -17,7 +17,7 @@ revoked_tokens = set()
 
 def create_app():
     app = Flask(__name__)
-    app.config['SECRET-KEY'] = os.environ.get('SECRET_KEY')
+    app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY')
     app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///site.db'
     app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
     app.config['JWT_SECRET_KEY'] = os.environ.get('JWT_SECRET_KEY')
@@ -29,20 +29,31 @@ def create_app():
     app.config['MAIL_USE_TLS'] = True
     app.config['MAIL_USERNAME'] = os.environ.get('EMAIL_USER')
     app.config['MAIL_PASSWORD'] = os.environ.get('EMAIL_PASS')
+    app.config['UPLOAD_FOLDER'] = os.path.join(os.getcwd(), 'uploads')
+    app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024  
 
     db.init_app(app)
     bcrypt.init_app(app)
     jwt.init_app(app)
     mail.init_app(app)
 
+    if not os.path.exists(app.config['UPLOAD_FOLDER']):
+        os.makedirs(app.config['UPLOAD_FOLDER'])
+
     @jwt.token_in_blocklist_loader
     def check_if_token_is_revoked(jwt_header, jwt_payload):
         jti = jwt_payload['jti']
         return jti in revoked_tokens
 
+    from app.routes.auth import auth_bp
+    from app.routes.product import product_bp
+    from app.models.user import User
+    from app.models.product import Product
+
+    app.register_blueprint(auth_bp, url_prefix='/api')
+    app.register_blueprint(product_bp, url_prefix='/api/products')
 
     with app.app_context():
-        from app.routes.auth import auth_bp
-        app.register_blueprint(auth_bp, url_prefix='/api')
+        db.create_all()
 
     return app
