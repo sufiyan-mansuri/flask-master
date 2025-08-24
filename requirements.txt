@@ -1,0 +1,6 @@
+Flask-SQLAlchemy
+Flask-Bcrypt
+Flask-JWT-Extended
+python-dotenv
+Flask-Mail
+Flask-WTF
