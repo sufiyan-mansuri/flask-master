@@ -4,3 +4,4 @@ Flask-JWT-Extended
 python-dotenv
 Flask-Mail
 Flask-WTF
+flask-cors
